@@ -1,0 +1,176 @@
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
+
+struct voter
+{
+char name[10], f_name[10], sex, add[20], voter_id[10];
+int age;
+};
+
+void space(int);
+void str();
+
+void main()
+{
+FILE *fprim,*ftemp;
+struct voter e;
+long int recsize;
+int choice;
+char cont,voterid[10];
+recsize=sizeof(e);
+
+fprim=fopen("VOTER.DAT","rb+");
+if(fprim==NULL)
+{
+	fprim=fopen("VOTER.DAT","wb+");
+	if(fprim==NULL)
+	{
+		printf("Can't Open File");
+		exit();
+	}
+}
+
+while(1)
+{
+clrscr();
+printf("\n\n\n");
+space(18);
+printf("Welcome to the software of Voting Management\n");
+str(); space(25);
+printf("This is a MENU DRIVEN Software\n");
+str(); space(23);
+printf("This Software provides Five Options\n");
+str(); space(10);
+printf("1. Inserting Records\n"); space(10);
+printf("2. Deleting Records\n"); space(10);
+printf("3. Modifying Records\n"); space(10);
+printf("4. Display of the Voter List\n"); space(10);
+printf("5. Exit from the Software\n\n\n\n\n"); space(45);
+printf("Prepared by Lalit Mehra\n");
+str();
+printf("Enter Your Choice");
+fflush(stdin);
+scanf("%d",&choice);
+
+switch(choice)
+{
+case 1:
+
+fseek(fprim,0,SEEK_END);
+cont='Y';
+while(cont=='Y')
+{
+	printf("\n Enter Name, Father's Name, Sex, Address, Voter ID and Age");
+	scanf("%s %s %c %s %s %d",e.name,e.f_name,&e.sex,e.add,e.voter_id,&e.age);
+	fwrite(&e,recsize,1,fprim);
+	printf("\nAdd another Record (Y/N)");
+	fflush(stdin);
+	cont=getche();
+}
+break;
+
+case 2:
+
+cont='Y';
+while(cont=='Y')
+{
+	printf("\n Enter VOTER ID of the Voter to Delete");
+	scanf("%s",voterid);
+	fflush(stdin);
+
+	ftemp=fopen("TEMP.DAT","wb");
+	rewind(fprim);
+
+	while(fread(&e,recsize,1,fprim) == 1)
+	{
+		if(strcmpi(e.voter_id,voterid)!=0)
+		{	fwrite(&e,recsize,1,ftemp);	}
+	}
+	fclose(fprim);
+	fclose(ftemp);
+	remove("VOTER.DAT");
+	rename("TEMP.DAT","VOTER.DAT");
+
+	fprim=fopen("VOTER.DAT","rb+");
+
+	printf("Delete another Record (Y/N)");
+	fflush(stdin);
+	cont=getche();
+}
+
+break;
+
+case 3:
+
+cont='Y';
+while(cont=='Y')
+{
+	printf("\n Enter VOTER ID of the Voter to Modify");
+	scanf("%s",voterid);
+
+	rewind(fprim);
+	while(fread(&e,recsize,1,fprim)==1)
+	{
+		if(strcmpi(e.voter_id,voterid)==0)
+		{
+			printf("\n Enter New Name, Father's Name, Sex, Address, Voter ID and Age");
+			scanf("%s %s %c %s %s %d",e.name,e.f_name,&e.sex,e.add,e.voter_id,&e.age);
+			fseek(fprim,-recsize,SEEK_CUR);
+			fwrite(&e,recsize,1,fprim);
+			break;
+		}
+	}
+fflush(stdin);
+puts("\n Modify another Record (Y/N)");
+fflush(stdin);
+cont=getche();
+}
+
+break;
+
+case 4:
+
+clrscr();
+space(30);
+printf("List of Records\n\n\n\n");
+str();
+printf("\nName\tFather Name\tSex\tAddress\t\tVoter ID\tAge\n");
+str();
+rewind(fprim);
+while(fread(&e,recsize,1,fprim)==1)
+	printf("\n%s\t%s\t\t%c\t%s\t\t%s\t\t%d\n",e.name,e.f_name,e.sex,e.add,e.voter_id,e.age);
+
+break;
+
+case 5:
+gotoxy(30,30);
+printf("Have a Nice Day");
+getch();
+exit(2);
+break;
+
+default:
+printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+space(25);
+printf("Please Enter a valid choice");
+getch();
+main();
+break;
+}
+getch();
+}
+}
+void space(int i)
+{
+int j;
+for(j=0;j<i;j++)
+printf(" ");
+}
+
+void str()
+{
+int i;
+for(i=0;i<80;i++)
+printf("*");
+}
